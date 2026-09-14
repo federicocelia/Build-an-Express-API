@@ -42,17 +42,25 @@ app.get("/api", (request, response) => {
   response.json(results);
 });
 
-app.get("/api/:field/:name", (req, res) => {
+app.get("/api/:field/:term", (req, res) => {
   let filteredData = startups;
 
-  const { field, name } = req.params;
+  const { field, term } = req.params;
+  const allowedFields = ["country", "continent", "industry"];
 
-  filteredData = filteredData.filter(
-    (startup) =>
-      startup[field] && startup[field].toLowerCase() === name.toLowerCase(),
-  );
+  if (allowedFields.includes(field)) {
+    filteredData = filteredData.filter(
+      (startup) =>
+        startup[field] && startup[field].toLowerCase() === term.toLowerCase(),
+    );
 
-  res.json(filteredData);
+    return res.json(filteredData);
+  } else {
+    return res.status(400).json({
+      message:
+        "Search field not allowed. Please use only 'country', 'continent', 'industry'",
+    });
+  }
 });
 
 app.listen(PORT, () => console.log(`Server connected on port ${PORT}`));
